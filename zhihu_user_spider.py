@@ -47,4 +47,4 @@ def main():
     data = req.get('https://www.zhihu.com/api/v4/members/zhaoyan-vivian/followers?&offset=0&limit=0', headers=headres)
     data1 = data.text
     name = re.compile('"url_token": "(.*?)"').findall(data1)
-    print(name)
+    
