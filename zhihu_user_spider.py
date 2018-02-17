@@ -11,6 +11,7 @@ import queue
 USER_url = []
 xinxi = {'name': '', '性别': '', '居住地': '', '行业': '', '教育经历': ''}
 D_url = queue.Queue('https://www.zhihu.com/people/zhaoyan-vivian/activities')
+D_xinxi = queue.Queue()
 headres = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:58.0) Gecko/20100101 Firefox/58.0 '}
 
 #用selenium进行半自动登陆知乎
@@ -25,7 +26,9 @@ def denglu():
     req.headers.clear()
     return req
 
-
+def cunchu():
+    x = D_xinxi.get()
+    
 #爬取关注userID
 def main():
     req = denglu()
@@ -33,9 +36,15 @@ def main():
     url = D_url.get()
     g_z_shudata = req.get(url[1])
 
+    '''采集信息加入队列'''
     xinxi['name'] = re.compile('>(.*?)</span><span class="RichText ProfileHeader-headline"').findall(g_z_shudata)
     xinxi['性别'] = re.compile('class="Icon Icon--(.*?)"').findall(g_z_shudata)
-    xinxi['居住地'] = re.compile('')
+    xinxi['居住地'] = re.compile('&quot;,&quo;type&quot;:&quot;topic&quot;,&quot;excerpt&quot;:&quot;(.*?)'
+                              '&quot;,&quot;id&quot;:&quot;').findall(g_z_shudata)
+    xinxi['行业'] = re.compile('</g></svg></div><!-- react-text: .*? -->(.*?)<!-- /react-text -->'
+                             '<div class="ProfileHeader').findall(g_z_shudata)
+    xinxi['教育经历'] = re.compile('586L11 0z"/></g></svg></div><!-- react-text: 119 -->(.*?)<!--').findall(g_z_shudata)
+    D_xinxi.put(xinxi)
 
     '''判断关注者住并请求关注着列表拼接成新的user链接'''
     g_z_shu = re.compile('关注者</div><strong class="NumberBoard-itemValue" title="(.*?)"').findall(g_z_shudata)
